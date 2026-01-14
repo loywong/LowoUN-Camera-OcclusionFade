@@ -29,8 +29,8 @@ namespace LowoUN.Camera {
         [SerializeField]
         LayerMask specLayer; // 专用层 抽象层
 
-        RaycastHit hit_wall;
         RaycastHit hit_ground;
+        RaycastHit hit_wall;
         RaycastHit hit_obstacle;
         // 可能交叉在一起，需要同时检测多个
         RaycastHit[] hit_specs; // = new RaycastHit[8]; // 预分配数组 
@@ -58,16 +58,34 @@ namespace LowoUN.Camera {
         }
 
         void Start () {
+            // 性能分档处理
             // if (Camera.main.allowHDR)
             //     targetMaterial = lowMaterial;
             // else
             targetMaterial = hdrMaterial;
+
+            characterToCameraVec = this.transform.position - character.position;
+            // raydir_specs = -transform.forward; xxx
+            raydir_specs = characterToCameraVec.normalized;
         }
 
         // 起点偏移
         Vector3 rayStart;
         Vector3 raydir_specs;
         // readonly Vector3 roleHightHalf = new Vector3 (0, 0.8f, 0);
+
+        // 相对是固定距离
+        Vector3 characterToCameraVec;
+
+        void ShowDebugRay () {
+            if (!isOpenTest)
+                return;
+
+            if (hit_ground.transform != null || hit_wall.transform != null || hit_obstacle.transform != null) //||(hit_specs!=null&&hit_specs.Length>0)
+                Debug.DrawRay (rayStart, characterToCameraVec, Color.red, 0.1f);
+            else
+                Debug.DrawRay (rayStart, characterToCameraVec, Color.green, 0.1f);
+        }
 
         void FixedUpdate () {
             if (character == null) {
@@ -80,7 +98,9 @@ namespace LowoUN.Camera {
             // UnityEngine.Debug.Log($"check maxDistance:{maxdist}");
 
             rayStart = character.position; // + roleHightHalf;
-            raydir_specs = -transform.forward;
+            // raydir_specs = -transform.forward;
+
+            ShowDebugRay ();
 
             if (Physics.Raycast (rayStart, raydir_specs, out hit_wall, maxDistance, wallLayer)) {
                 if (isOpenTest) {
