@@ -82,9 +82,10 @@ namespace LowoUN.Camera {
                 return;
 
             if (hit_ground.transform != null || hit_wall.transform != null || hit_obstacle.transform != null) //||(hit_specs!=null&&hit_specs.Length>0)
-                Debug.DrawRay (rayStart, characterToCameraVec, Color.red, 0.1f);
-            else
-                Debug.DrawRay (rayStart, characterToCameraVec, Color.green, 0.1f);
+                // Debug.DrawRay (rayStart, characterToCameraVec, Color.red, 0.1f);
+                return;
+
+            Debug.DrawRay (rayStart, characterToCameraVec, Color.green, 0.1f);
         }
 
         void FixedUpdate () {
